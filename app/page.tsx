@@ -46,23 +46,39 @@ export default function Home() {
     if (isMedium) difficulties.push("medium");
     if (isHard) difficulties.push("hard");
 
-    const getRandomElement = <T,>(array: T[]): T => {
-      return array[Math.floor(Math.random() * array.length)];
-    };
-
-    const getRandomAspect = (aspect: Record<Difficulty, string[]>) => {
-      // Choose a random difficulty from those allowed
-      const difficulty = getRandomElement(difficulties);
-      // Choose a random element from the chosen difficulty level for the aspect
-      return aspect[difficulty][
-        Math.floor(Math.random() * aspect[difficulty].length)
+    const getRandomElement = <T,>(array: T[], current: T): T => {
+      let possibleChoices = array.filter((item) => item !== current);
+      // If there are no other choices, return the current one
+      if (possibleChoices.length === 0) return current;
+      return possibleChoices[
+        Math.floor(Math.random() * possibleChoices.length)
       ];
     };
 
-    setChallengeDesign(getRandomAspect(Challenge.design));
-    setChallengeFor(getRandomAspect(Challenge.for));
-    setChallengeInOrderTo(getRandomAspect(Challenge.inOrderTo));
-    setChallengeDevice(getRandomAspect(Challenge.device));
+    const getRandomAspect = (
+      aspect: Record<Difficulty, string[]>,
+      current: string
+    ) => {
+      // Choose a random difficulty from those allowed
+      const difficulty = getRandomElement(difficulties, "easy"); // Assuming 'easy' as a placeholder for current difficulty
+      // Filter the current choice and choose a random element from the chosen difficulty level for the aspect
+      return getRandomElement(aspect[difficulty], current);
+    };
+
+    if (!lockDesign)
+      setChallengeDesign(
+        getRandomAspect(Challenge.design, challengeDesign || "")
+      );
+    if (!lockFor)
+      setChallengeFor(getRandomAspect(Challenge.for, challengeFor || ""));
+    if (!lockInOrderTo)
+      setChallengeInOrderTo(
+        getRandomAspect(Challenge.inOrderTo, challengeInOrderTo || "")
+      );
+    if (!lockDevice)
+      setChallengeDevice(
+        getRandomAspect(Challenge.device, challengeDevice || "")
+      );
   }, [
     isEasy,
     isHard,
@@ -71,6 +87,14 @@ export default function Home() {
     setChallengeDevice,
     setChallengeFor,
     setChallengeInOrderTo,
+    challengeDesign,
+    challengeDevice,
+    challengeFor,
+    challengeInOrderTo,
+    lockDesign,
+    lockFor,
+    lockInOrderTo,
+    lockDevice,
   ]);
 
   // If any params are empty (such as on initial load), get a new challenge
