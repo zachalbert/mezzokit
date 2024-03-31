@@ -12,6 +12,14 @@ const config: Config = {
       colors: {
         gray: colors.stone,
       },
+      rotate: {
+        "5": "5deg",
+        "10": "10deg",
+        "15": "15deg",
+        "20": "20deg",
+        "30": "30deg",
+        "60": "60deg",
+      },
     },
   },
   plugins: [

@@ -5,10 +5,18 @@ import {
   topLayerVariants,
   bottomLayerVariants,
 } from "./buttonColors";
+import ToggleIndicator from "./ToggleIndicator";
+
+type ButtonWidth = "full" | "hug";
+
+type ButtonSegment = "left" | "mid" | "right";
 
 type ButtonProps = {
   color?: ButtonColor;
   onClick?: () => void;
+  width?: ButtonWidth;
+  toggle?: boolean | undefined;
+  segment?: ButtonSegment;
   children: React.ReactNode;
   className?: string;
 };
@@ -16,37 +24,53 @@ type ButtonProps = {
 const Button: React.FC<ButtonProps> = ({
   color = "purple",
   onClick,
+  width = "hug",
+  toggle,
+  segment,
   children,
   className,
 }) => {
   return (
     <button
       onClick={onClick}
-      className={cx("relative", "w-32", "h-16", "group", className)}
+      className={cx(
+        "relative",
+        "h-16",
+        "group",
+        width === "full" && "w-full",
+        width === "hug" && "flex-1",
+        className
+      )}
     >
       <span
         id="top-layer"
         className={cx(
           topLayerVariants[color],
           "relative",
-          "w-[96%]",
+          "w-full",
           "h-full",
+          "px-4",
           "flex",
           "items-center",
           "justify-center",
-          "rounded-lg",
+          !segment && "rounded-lg",
+          segment === "left" && "rounded-l-lg",
+          segment === "right" && "rounded-r-lg",
           "absolute",
           "top-0",
           "left-1/2",
           "-translate-x-1/2",
           "z-20",
-          "group-hover:translate-y-0.5",
-          "group-active:translate-y-2",
           "border-2",
           "overflow-hidden",
           "shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.35)]",
-          "group-hover:shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.25)]",
+          !toggle && "group-hover:translate-y-0.5",
+          !toggle &&
+            "group-hover:shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.25)]",
+          "group-active:translate-y-2",
           "group-active:shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.15)]",
+          toggle && "translate-y-2",
+          toggle && "shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.15)]",
 
           "before:content-['']",
           "before:w-full",
@@ -56,15 +80,19 @@ const Button: React.FC<ButtonProps> = ({
           "before:left-0",
           "before:top-0",
           "before:pointer-events-none",
-          "before:rounded-lg",
+          !segment && "before:rounded-lg",
+          segment === "left" && "before:rounded-l-lg",
+          segment === "right" && "before:rounded-r-lg",
 
           "before:bg-gradient-to-bl",
           "before:from-transparent",
           "before:to-white/30",
-          "before:group-hover:from-transparent",
-          "before:group-hover:to-white/20",
+          !toggle && "before:group-hover:from-transparent",
+          !toggle && "before:group-hover:to-white/20",
           "before:group-active:from-black/20",
-          "before:group-active:to-white/10"
+          "before:group-active:to-white/10",
+          toggle && "before:from-black/20",
+          toggle && "before:to-white/10"
         )}
       >
         <span
@@ -81,6 +109,7 @@ const Button: React.FC<ButtonProps> = ({
             "gap-2"
           )}
         >
+          {toggle !== undefined && <ToggleIndicator toggle={toggle} />}
           {children}
         </span>
       </span>
@@ -93,16 +122,22 @@ const Button: React.FC<ButtonProps> = ({
           "w-full",
           "h-full",
           "flex",
-          "rounded-xl",
+          !segment && "-ml-1",
+          !segment && "px-0.5",
+          "box-content",
+          !segment && "rounded-xl",
+          segment === "left" && "rounded-l-xl",
+          segment === "right" && "rounded-r-xl",
           "absolute",
           "top-0",
           "left-0",
           "z-10",
-          "translate-y-3",
+          "translate-y-2",
           "border-2",
           "shadow-xl",
-          "group-hover:shadow-lg",
-          "group-active:shadow"
+          !toggle && "group-hover:shadow-lg",
+          "group-active:shadow",
+          toggle && "shadow"
         )}
       ></span>
     </button>
