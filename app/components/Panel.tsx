@@ -18,6 +18,9 @@ type BorderRadii =
 type PanelProps = {
   direction?: "row" | "col";
   angle?: Angle;
+  width?: string;
+  marginTop?: string;
+  marginBottom?: string;
   roundedCorners?: BorderRadii;
   children: React.ReactNode;
   className?: string;
@@ -26,6 +29,11 @@ type PanelProps = {
 const Panel: React.FC<PanelProps> = ({
   direction = "row",
   angle = 30,
+  // width, marginTop, and marginBottom must be manually configured
+  // depending on the angle of the panel. Kind of annoying!
+  width = "w-[100%]",
+  marginTop = "-mt-[0px]",
+  marginBottom = "-mt-[0px]",
   roundedCorners = "all",
   children,
   className,
@@ -41,20 +49,9 @@ const Panel: React.FC<PanelProps> = ({
     60: "rotate-x-60",
   };
 
-  const layoutVariants: Record<Angle, string[]> = {
-    0: ["w-full", "-mb-[1px]", "-mt-[1px]"],
-    5: ["w-[99.25%]", "-mb-[1px]", "-mt-[2px]"],
-    10: ["w-[98.25%]", "-mb-[1px]", "-mt-[4px]"],
-    15: ["w-[97.5%]", "-mb-[2px]", "-mt-[7px]"],
-    20: ["w-[96.5%]", "-mb-[4px]", "-mt-[10px]"],
-    30: ["w-[95%]", "-mb-[10px]", "-mt-[19px]"],
-    45: ["w-[92.75%]", "-mb-[26px]", "-mt-[36px]"],
-    60: ["w-[91.25%]", "-mb-[48px]", "-mt-[56px]"],
-  };
-
   const cornerVariants: Record<BorderRadii, string> = {
     all: "rounded-lg",
-    none: "rounded-none",
+    none: "rounded-sm",
     tl: "rounded-tl-lg",
     t: "rounded-t-lg",
     tr: "rounded-tr-lg",
@@ -66,7 +63,15 @@ const Panel: React.FC<PanelProps> = ({
   };
 
   return (
-    <div className={cx("perspective-1000", "mx-auto", layoutVariants[angle])}>
+    <div
+      className={cx(
+        "perspective-1000",
+        "mx-auto",
+        width,
+        marginTop,
+        marginBottom
+      )}
+    >
       <div className={cx("transform", "relative", angleVariants[angle])}>
         <div
           className={cx(

@@ -3,22 +3,44 @@ import cx from "classnames";
 import Button from "./components/Button";
 import Panel from "./components/Panel";
 import { ICON_CLASSES } from "./components/iconClasses";
-import { ArrowPathRoundedSquareIcon } from "@heroicons/react/16/solid";
-import { useEffect, useState } from "react";
+import {
+  ArrowPathRoundedSquareIcon,
+  HomeIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+} from "@heroicons/react/16/solid";
+import { useCallback, useEffect, useState } from "react";
 import { Difficulty, Challenge } from "./components/challenges";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
+import Link from "next/link";
+import Speaker from "./components/Speaker";
 
 export default function Home() {
+  const router = useRouter();
+  const [searchParams] = useSearchParams();
   const [isEasy, setIsEasy] = useState(true);
   const [isMedium, setIsMedium] = useState(false);
   const [isHard, setIsHard] = useState(false);
-  const [selectedChallenge, setSelectedChallenge] = useState({
-    design: "",
-    for: "",
-    inOrderTo: "",
-    device: "",
-  });
+  const [challengeDesign, setChallengeDesign] = useQueryState("design");
+  const [challengeFor, setChallengeFor] = useQueryState("for");
+  const [challengeInOrderTo, setChallengeInOrderTo] =
+    useQueryState("inOrderTo");
+  const [challengeDevice, setChallengeDevice] = useQueryState("on");
+  const [lockDesign, setLockDesign] = useState(false);
+  const [lockFor, setLockFor] = useState(false);
+  const [lockInOrderTo, setLockInOrderTo] = useState(false);
+  const [lockDevice, setLockDevice] = useState(false);
 
-  const getChallenge = () => {
+  // Force easy mode if no difficulties are selected
+  useEffect(() => {
+    if (!isEasy && !isMedium && !isHard) {
+      setIsEasy(true);
+    }
+  }, [isEasy, isMedium, isHard]);
+
+  // Get a random challenge
+  const getChallenge = useCallback(() => {
     const difficulties: Difficulty[] = [];
     if (isEasy || (!isEasy && !isMedium && !isHard)) difficulties.push("easy");
     if (isMedium) difficulties.push("medium");
@@ -37,22 +59,41 @@ export default function Home() {
       ];
     };
 
-    const design = getRandomAspect(Challenge.design);
-    const forChallenge = getRandomAspect(Challenge.for);
-    const inOrderTo = getRandomAspect(Challenge.inOrderTo);
-    const device = getRandomAspect(Challenge.device);
+    setChallengeDesign(getRandomAspect(Challenge.design));
+    setChallengeFor(getRandomAspect(Challenge.for));
+    setChallengeInOrderTo(getRandomAspect(Challenge.inOrderTo));
+    setChallengeDevice(getRandomAspect(Challenge.device));
+  }, [
+    isEasy,
+    isHard,
+    isMedium,
+    setChallengeDesign,
+    setChallengeDevice,
+    setChallengeFor,
+    setChallengeInOrderTo,
+  ]);
 
-    setSelectedChallenge({
-      design: design,
-      for: forChallenge,
-      inOrderTo: inOrderTo,
-      device: device,
-    });
-  };
-
+  // If any params are empty (such as on initial load), get a new challenge
   useEffect(() => {
-    getChallenge();
-  }, []);
+    if (
+      challengeDesign === null ||
+      challengeDesign === "" ||
+      challengeFor === null ||
+      challengeFor === "" ||
+      challengeInOrderTo === null ||
+      challengeInOrderTo === "" ||
+      challengeDevice === null ||
+      challengeDevice === ""
+    ) {
+      getChallenge();
+    }
+  }, [
+    challengeDesign,
+    challengeFor,
+    challengeInOrderTo,
+    challengeDevice,
+    getChallenge,
+  ]);
 
   return (
     <main
@@ -66,26 +107,94 @@ export default function Home() {
         "bg-gray-300"
       )}
     >
-      <Panel angle={0} className="w-[86.5%]" roundedCorners="t">
-        <div>
-          <strong>Design:</strong> <span>{selectedChallenge.design}</span>
+      <Panel
+        angle={0}
+        direction="col"
+        className="w-[92.5%] text-gray-900 gap-8"
+        roundedCorners="t"
+      >
+        <div className="gap-6 flex">
+          <Button
+            color="gray"
+            className="grow-0"
+            onClick={() => setLockDesign(!lockDesign)}
+            toggle={lockDesign}
+          >
+            {lockDesign ? (
+              <LockClosedIcon className={ICON_CLASSES} />
+            ) : (
+              <LockOpenIcon className={ICON_CLASSES} />
+            )}
+          </Button>
+          <div className="flex items-center w-full">
+            <div className="font-bold flex-1">Design:</div>{" "}
+            <div className="flex-1">{challengeDesign || "a thing"}</div>
+          </div>
         </div>
-        <div>
-          <strong>Design for:</strong> <span>{selectedChallenge.for}</span>
+        <div className="gap-6 flex">
+          <Button
+            color="gray"
+            className="grow-0"
+            onClick={() => setLockFor(!lockFor)}
+            toggle={lockFor}
+          >
+            {lockFor ? (
+              <LockClosedIcon className={ICON_CLASSES} />
+            ) : (
+              <LockOpenIcon className={ICON_CLASSES} />
+            )}
+          </Button>
+          <div className="flex items-center w-full">
+            <div className="font-bold flex-1">For:</div>{" "}
+            <div className="flex-1">{challengeFor || "an app"}</div>
+          </div>
         </div>
-        <div>
-          <strong>In order to:</strong>{" "}
-          <span>{selectedChallenge.inOrderTo}</span>
+        <div className="gap-6 flex">
+          <Button
+            color="gray"
+            className="grow-0"
+            onClick={() => setLockInOrderTo(!lockInOrderTo)}
+            toggle={lockInOrderTo}
+          >
+            {lockInOrderTo ? (
+              <LockClosedIcon className={ICON_CLASSES} />
+            ) : (
+              <LockOpenIcon className={ICON_CLASSES} />
+            )}
+          </Button>
+          <div className="flex items-center w-full">
+            <div className="font-bold flex-1">In order to:</div>{" "}
+            <div className="flex-1">{challengeInOrderTo || "win"}</div>
+          </div>
         </div>
-        <div>
-          <strong>Device:</strong> <span>{selectedChallenge.device}</span>
+        <div className="gap-6 flex">
+          <Button
+            color="gray"
+            className="grow-0"
+            onClick={() => setLockDevice(!lockDevice)}
+            toggle={lockDevice}
+          >
+            {lockDevice ? (
+              <LockClosedIcon className={ICON_CLASSES} />
+            ) : (
+              <LockOpenIcon className={ICON_CLASSES} />
+            )}
+          </Button>
+          <div className="flex items-center w-full">
+            <div className="font-bold flex-1">On:</div>{" "}
+            <div className="flex-1">{challengeDevice || "computer"}</div>
+          </div>
         </div>
       </Panel>
+
       <Panel
         direction="col"
-        angle={45}
+        angle={30}
         className="gap-12"
         roundedCorners="none"
+        width="w-[96.25%]"
+        marginTop="-mt-[14px]"
+        marginBottom="-mb-[9px]"
       >
         <div className="flex gap-8">
           <div className="flex">
@@ -119,24 +228,17 @@ export default function Home() {
             <span>New Challenge</span>
           </Button>
         </div>
-        <div className={cx("mx-auto", "w-16", "gap-2", "flex", "flex-col")}>
-          <div
-            className={cx(
-              "bg-gradient-to-b",
-              "from-gray-900",
-              "to-gray-600",
-              "w-full",
-              "h-3",
-              "rounded-full",
-              "border-2",
-              "border-gray-500",
-              "border-b-gray-300"
-            )}
-          ></div>
-        </div>
       </Panel>
-      <Panel angle={0} roundedCorners="b">
-        <Button color="fuchsia">Yay</Button>
+
+      <Panel angle={0} roundedCorners="b" className="justify-between">
+        <Link href="/">
+          <Button color="fuchsia">
+            <HomeIcon className={ICON_CLASSES} />
+          </Button>
+        </Link>
+        <div className="w-24 self-center">
+          <Speaker lines={3} />
+        </div>
       </Panel>
 
       <div className="prose mt-16">
