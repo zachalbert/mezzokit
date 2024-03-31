@@ -11,14 +11,11 @@ import {
 } from "@heroicons/react/16/solid";
 import { useCallback, useEffect, useState } from "react";
 import { Difficulty, Challenge } from "./components/challenges";
-import { useSearchParams, useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import Link from "next/link";
 import Speaker from "./components/Speaker";
 
 export default function Home() {
-  const router = useRouter();
-  const [searchParams] = useSearchParams();
   const [isEasy, setIsEasy] = useState(true);
   const [isMedium, setIsMedium] = useState(false);
   const [isHard, setIsHard] = useState(false);
