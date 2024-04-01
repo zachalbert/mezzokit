@@ -12,21 +12,27 @@ type ButtonWidth = "full" | "hug";
 type ButtonSegment = "left" | "mid" | "right";
 
 type ButtonProps = {
+  size?: "sm" | "md";
   color?: ButtonColor;
   onClick?: () => void;
   width?: ButtonWidth;
   toggle?: boolean | undefined;
+  showToggle?: boolean;
   segment?: ButtonSegment;
+  disabled?: boolean;
   children: React.ReactNode;
   className?: string;
 };
 
 const Button: React.FC<ButtonProps> = ({
+  size = "md",
   color = "purple",
   onClick,
   width = "hug",
   toggle,
+  showToggle = true,
   segment,
+  disabled = false,
   children,
   className,
 }) => {
@@ -35,12 +41,16 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={cx(
         "relative",
-        "h-16",
         "group",
+        "flex",
+        size === "md" && "h-16",
+        size === "sm" && "h-10",
         width === "full" && "w-full",
         width === "hug" && "flex-1",
+        disabled && "pointer-events-none",
         className
       )}
+      disabled={disabled}
     >
       <span
         id="top-layer"
@@ -49,7 +59,8 @@ const Button: React.FC<ButtonProps> = ({
           "relative",
           "w-full",
           "h-full",
-          "px-4",
+          "px-2",
+          "sm:px-4",
           "flex",
           "items-center",
           "justify-center",
@@ -85,12 +96,12 @@ const Button: React.FC<ButtonProps> = ({
           segment === "right" && "before:rounded-r-lg",
 
           "before:bg-gradient-to-bl",
-          "before:from-transparent",
-          "before:to-white/30",
+          !toggle && "before:from-transparent",
+          !toggle && "before:to-white/30",
           !toggle && "before:group-hover:from-transparent",
           !toggle && "before:group-hover:to-white/20",
-          "before:group-active:from-black/20",
-          "before:group-active:to-white/10",
+          !toggle && "before:group-active:from-black/20",
+          !toggle && "before:group-active:to-white/10",
           toggle && "before:from-black/20",
           toggle && "before:to-white/10"
         )}
@@ -109,7 +120,9 @@ const Button: React.FC<ButtonProps> = ({
             "gap-2"
           )}
         >
-          {toggle !== undefined && <ToggleIndicator toggle={toggle} />}
+          {toggle !== undefined && showToggle && (
+            <ToggleIndicator toggle={toggle} />
+          )}
           {children}
         </span>
       </span>

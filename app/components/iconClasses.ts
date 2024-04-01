@@ -1,1 +1,4 @@
-export const ICON_CLASSES = "w-6 h-6";
+export const ICON_CLASSES = {
+  MD: "w-6 h-6",
+  SM: "w-4 h-4",
+};

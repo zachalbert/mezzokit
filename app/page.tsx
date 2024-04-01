@@ -15,6 +15,14 @@ import { useQueryState } from "nuqs";
 import Link from "next/link";
 import Speaker from "./components/Speaker";
 import { Suspense } from "react";
+import Timer from "./components/Timer";
+import PromptDisplay from "./components/PromptDisplay";
+// import SplitFlapDisplay from "react-split-flap-display";
+// import {
+//   NUMERIC,
+//   ALPHA,
+//   PUNCTUATION,
+// } from "react-split-flap-display/constants";
 
 export default function Page() {
   return (
@@ -133,87 +141,80 @@ function Client() {
         "flex-col",
         "items-center",
         "justify-center",
-        "p-24",
+        "p-4",
+        "md:p-8",
+        "lg:p-16",
+        "xl:p-24",
         "bg-gray-300"
       )}
     >
+      {/* <FlapDisplay
+        chars={Presets.ALPHANUM + ",!"}
+        length={13}
+        value={"Hello, World!"}
+      /> */}
+      {/* <SplitFlapDisplay
+        background="#000000"
+        borderColor="#dddddd"
+        borderWidth="1px"
+        characterSet={NUMERIC}
+        characterWidth="1em"
+        fontSize="2em"
+        minLength={5}
+        padDirection="left"
+        step={200}
+        textColor="#dddddd"
+        value="94103"
+        withSound={false}
+      /> */}
       <Panel
         angle={0}
         direction="col"
         className="w-[92.5%] text-gray-900 gap-8"
         roundedCorners="t"
       >
-        <div className="gap-6 flex">
-          <Button
-            color="gray"
-            className="grow-0"
-            onClick={() => setLockDesign(!lockDesign)}
-            toggle={lockDesign}
-          >
-            {lockDesign ? (
-              <LockClosedIcon className={ICON_CLASSES} />
-            ) : (
-              <LockOpenIcon className={ICON_CLASSES} />
-            )}
-          </Button>
-          <div className="flex items-center w-full">
-            <div className="font-bold flex-1">Design:</div>{" "}
-            <div className="flex-1">{challengeDesign || "a thing"}</div>
-          </div>
-        </div>
-        <div className="gap-6 flex">
-          <Button
-            color="gray"
-            className="grow-0"
-            onClick={() => setLockFor(!lockFor)}
-            toggle={lockFor}
-          >
-            {lockFor ? (
-              <LockClosedIcon className={ICON_CLASSES} />
-            ) : (
-              <LockOpenIcon className={ICON_CLASSES} />
-            )}
-          </Button>
-          <div className="flex items-center w-full">
-            <div className="font-bold flex-1">For:</div>{" "}
-            <div className="flex-1">{challengeFor || "an app"}</div>
-          </div>
-        </div>
-        <div className="gap-6 flex">
-          <Button
-            color="gray"
-            className="grow-0"
-            onClick={() => setLockInOrderTo(!lockInOrderTo)}
-            toggle={lockInOrderTo}
-          >
-            {lockInOrderTo ? (
-              <LockClosedIcon className={ICON_CLASSES} />
-            ) : (
-              <LockOpenIcon className={ICON_CLASSES} />
-            )}
-          </Button>
-          <div className="flex items-center w-full">
-            <div className="font-bold flex-1">In order to:</div>{" "}
-            <div className="flex-1">{challengeInOrderTo || "win"}</div>
-          </div>
-        </div>
-        <div className="gap-6 flex">
-          <Button
-            color="gray"
-            className="grow-0"
-            onClick={() => setLockDevice(!lockDevice)}
-            toggle={lockDevice}
-          >
-            {lockDevice ? (
-              <LockClosedIcon className={ICON_CLASSES} />
-            ) : (
-              <LockOpenIcon className={ICON_CLASSES} />
-            )}
-          </Button>
-          <div className="flex items-center w-full">
-            <div className="font-bold flex-1">On:</div>{" "}
-            <div className="flex-1">{challengeDevice || "computer"}</div>
-          </div>
+        <Timer />
+
+        <div
+          className={cx(
+            "bg-gray-500/40",
+            "pt-4",
+            "pb-8",
+            "px-6",
+            "rounded-xl",
+            "flex",
+            "flex-col",
+            "gap-4"
+          )}
+        >
+          <PromptDisplay
+            title="Design"
+            lock={lockDesign}
+            setLock={setLockDesign}
+            prompt={challengeDesign}
+            fallback="a thing"
+          />
+          <PromptDisplay
+            title="For"
+            lock={lockFor}
+            setLock={setLockFor}
+            prompt={challengeFor}
+            fallback="an app"
+          />
+          <PromptDisplay
+            title="In Order To"
+            lock={lockInOrderTo}
+            setLock={setLockInOrderTo}
+            prompt={challengeInOrderTo}
+            fallback="win more"
+          />
+          <PromptDisplay
+            title="On"
+            lock={lockDevice}
+            setLock={setLockDevice}
+            prompt={challengeDevice}
+            fallback="mobile"
+          />
         </div>
       </Panel>
 
@@ -226,7 +227,7 @@ function Client() {
         marginTop="-mt-[14px]"
         marginBottom="-mb-[9px]"
       >
-        <div className="flex gap-8">
+        <div className={cx("flex", "flex-col", "sm:flex-row", "gap-6")}>
           <div className="flex">
             <Button
               onClick={() => setIsEasy(!isEasy)}
@@ -253,9 +254,9 @@ function Client() {
               Hard
             </Button>
           </div>
-          <Button onClick={getChallenge} color="orange">
-            <ArrowPathRoundedSquareIcon className={ICON_CLASSES} />
-            <span>New Challenge</span>
+          <Button onClick={getChallenge} color="orange" width="full">
+            <ArrowPathRoundedSquareIcon className={ICON_CLASSES.MD} />
+            <span>Again!</span>
           </Button>
         </div>
       </Panel>
@@ -263,15 +264,15 @@ function Client() {
       <Panel angle={0} roundedCorners="b" className="justify-between">
         <Link href="/">
           <Button color="fuchsia">
-            <HomeIcon className={ICON_CLASSES} />
+            <HomeIcon className={ICON_CLASSES.MD} />
           </Button>
         </Link>
         <div className="w-24 self-center">
-          <Speaker lines={3} />
+          <Speaker lines={4} />
         </div>
       </Panel>
 
-      <div className="prose mt-16">
+      {/* <div className="prose mt-16">
         <h2>Button Colors</h2>
       </div>
       <div className="perspective-1000">
@@ -297,7 +298,7 @@ function Client() {
             <Button color="rose">rose</Button>
           </div>
         </div>
-      </div>
+      </div> */}
     </main>
   );
 }
