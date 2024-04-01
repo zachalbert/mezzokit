@@ -40,7 +40,7 @@ function Client() {
   const [challengeFor, setChallengeFor] = useQueryState("for");
   const [challengeInOrderTo, setChallengeInOrderTo] =
     useQueryState("inOrderTo");
-  const [challengeDevice, setChallengeDevice] = useQueryState("on");
+  const [challengeDevice, setChallengeDevice] = useQueryState("device");
   const [lockDesign, setLockDesign] = useState(false);
   const [lockFor, setLockFor] = useState(false);
   const [lockInOrderTo, setLockInOrderTo] = useState(false);
@@ -170,7 +170,7 @@ function Client() {
       <Panel
         angle={0}
         direction="col"
-        className="w-[92.5%] text-gray-900 gap-8"
+        className="w-[95.1%] text-gray-900 gap-8"
         roundedCorners="t"
       >
         <Timer />
@@ -178,9 +178,7 @@ function Client() {
         <div
           className={cx(
             "bg-gray-500/40",
-            "pt-4",
-            "pb-8",
-            "px-6",
+            "p-6",
             "rounded-xl",
             "flex",
             "flex-col",
@@ -209,7 +207,7 @@ function Client() {
             fallback="win more"
           />
           <PromptDisplay
-            title="On"
+            title="Device"
             lock={lockDevice}
             setLock={setLockDevice}
             prompt={challengeDevice}
@@ -220,12 +218,12 @@ function Client() {
 
       <Panel
         direction="col"
-        angle={30}
+        angle={20}
         className="gap-12"
         roundedCorners="none"
-        width="w-[96.25%]"
-        marginTop="-mt-[14px]"
-        marginBottom="-mb-[9px]"
+        width="w-[97.5%]"
+        marginTop="-mt-[8px]"
+        marginBottom="-mb-[5px]"
       >
         <div className={cx("flex", "flex-col", "sm:flex-row", "gap-6")}>
           <div className="flex">
