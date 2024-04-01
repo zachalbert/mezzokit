@@ -5,9 +5,9 @@ import Panel from "./components/Panel";
 import { ICON_CLASSES } from "./components/iconClasses";
 import {
   ArrowPathRoundedSquareIcon,
+  DocumentDuplicateIcon,
   HomeIcon,
-  LockClosedIcon,
-  LockOpenIcon,
+  ShareIcon,
 } from "@heroicons/react/16/solid";
 import { useCallback, useEffect, useState } from "react";
 import { Difficulty, Challenge } from "./components/challenges";
@@ -17,6 +17,8 @@ import Speaker from "./components/Speaker";
 import { Suspense } from "react";
 import Timer from "./components/Timer";
 import PromptDisplay from "./components/PromptDisplay";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Tooltip } from "react-tooltip";
 // import SplitFlapDisplay from "react-split-flap-display";
 // import {
 //   NUMERIC,
@@ -33,6 +35,11 @@ export default function Page() {
 }
 
 function Client() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const queryString = new URLSearchParams(searchParams).toString();
+  const [fullUrl, setFullUrl] = useState("");
+
   const [isEasy, setIsEasy] = useState(true);
   const [isMedium, setIsMedium] = useState(false);
   const [isHard, setIsHard] = useState(false);
@@ -45,6 +52,12 @@ function Client() {
   const [lockFor, setLockFor] = useState(false);
   const [lockInOrderTo, setLockInOrderTo] = useState(false);
   const [lockDevice, setLockDevice] = useState(false);
+
+  useEffect(() => {
+    const host = window.location.origin;
+    const currentUrl = `${host}${pathname}?${queryString}`;
+    setFullUrl(currentUrl);
+  }, [pathname, queryString]);
 
   // Force easy mode if no difficulties are selected
   useEffect(() => {
@@ -260,11 +273,53 @@ function Client() {
       </Panel>
 
       <Panel angle={0} roundedCorners="b" className="justify-between">
-        <Link href="/">
-          <Button color="fuchsia">
-            <HomeIcon className={ICON_CLASSES.MD} />
-          </Button>
-        </Link>
+        <div className="flex gap-4">
+          <Link href="/">
+            <Button color="fuchsia">
+              <HomeIcon className={ICON_CLASSES.MD} />
+            </Button>
+          </Link>
+          <a
+            data-tooltip-id="share-tooltip"
+            data-tooltip-content="Share this prompt"
+            data-tooltip-place="top"
+          >
+            <Button
+              color="fuchsia"
+              onClick={() => {
+                navigator.clipboard.writeText(fullUrl);
+              }}
+            >
+              <ShareIcon className={ICON_CLASSES.MD} />
+            </Button>
+          </a>
+          <Tooltip id="share-tooltip" />
+          <a
+            data-tooltip-id="copy-tooltip"
+            data-tooltip-content="Copy this prompt"
+            data-tooltip-place="top"
+          >
+            <Button
+              color="fuchsia"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  "Design " +
+                    challengeDesign +
+                    " for " +
+                    challengeFor +
+                    " in order to " +
+                    challengeInOrderTo +
+                    " on " +
+                    challengeDevice +
+                    " devices"
+                );
+              }}
+            >
+              <DocumentDuplicateIcon className={ICON_CLASSES.MD} />
+            </Button>
+          </a>
+          <Tooltip id="copy-tooltip" />
+        </div>
         <div className="w-24 self-center">
           <Speaker lines={4} />
         </div>
